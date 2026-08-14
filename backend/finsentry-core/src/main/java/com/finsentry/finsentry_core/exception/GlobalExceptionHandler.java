@@ -43,4 +43,19 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.NOT_FOUND)
                 .body(response);
     }
+    @ExceptionHandler(InvalidLoanStatusTransitionException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidLoanStatusTransition(
+            InvalidLoanStatusTransitionException exception) {
+
+        ApiErrorResponse response = new ApiErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Bad Request",
+                exception.getMessage(),
+                OffsetDateTime.now()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(response);
+    }
 }
