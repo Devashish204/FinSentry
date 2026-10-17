@@ -57,4 +57,9 @@ public class DocumentController {
                 id, request.getStatus()
         );
     }
+
+    @GetMapping("/completeness/{loanApplicationId}")
+    public boolean checkDocumentCompleteness(@PathVariable Long loanApplicationId){
+        return documentService.isDocumentComplete(loanApplicationId);
+    }
 }

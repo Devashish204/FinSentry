@@ -3,6 +3,7 @@ package com.finsentry.finsentry_core.loan.service;
 import com.finsentry.finsentry_core.customer.entity.Customer;
 import com.finsentry.finsentry_core.customer.repository.CustomerRepository;
 import com.finsentry.finsentry_core.exception.CustomerNotFoundException;
+import com.finsentry.finsentry_core.exception.IncompleteDocumentsException;
 import com.finsentry.finsentry_core.exception.InvalidLoanStatusTransitionException;
 import com.finsentry.finsentry_core.exception.LoanApplicationNotFoundException;
 import com.finsentry.finsentry_core.loan.dto.CreateLoanApplicationRequest;
@@ -23,10 +24,13 @@ public class LoanApplicationService {
 
     private final LoanApplicationRepository loanApplicationRepository;
     private final CustomerRepository customerRepository;
+    private final DocumentService documentService;
 
-    public LoanApplicationService(LoanApplicationRepository loanApplicationRepository, CustomerRepository customerRepository) {
+
+    public LoanApplicationService(LoanApplicationRepository loanApplicationRepository, CustomerRepository customerRepository, DocumentService documentService) {
         this.loanApplicationRepository = loanApplicationRepository;
         this.customerRepository = customerRepository;
+        this.documentService = documentService;
     }
 
     public LoanApplicationResponse createLoanApplication(CreateLoanApplicationRequest createLoanApplicationRequest) {
@@ -161,6 +165,10 @@ public class LoanApplicationService {
                     currentStatus.name(),
                     newStatus.name()
             );
+        }
+
+        if(currentStatus == LoanStatus.DOCS_PENDING && newStatus == LoanStatus.PRE_SCREENING && !documentService.isDocumentComplete(id)){
+            throw new IncompleteDocumentsException();
         }
 
         loanApplication.setStatus(newStatus);

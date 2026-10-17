@@ -102,6 +102,20 @@ public class DocumentService {
         return mapToResponse(updatedDocument);
     }
 
+    public boolean isDocumentComplete(Long loanApplicationId) {
+        LoanApplication loanApplication = loanApplicationRepository.findById(loanApplicationId)
+                .orElseThrow(() -> new LoanApplicationNotFoundException(loanApplicationId));
+
+        var documents = documentRepository.findByLoanApplicationId(loanApplicationId);
+
+        if(documents.isEmpty()) {
+            return false;
+        }
+
+        return documents.stream()
+                .allMatch(document -> document.getVerificationStatus() == DocumentVerificationStatus.VERIFIED);
+    }
+
     public DocumentResponse mapToResponse(Document document) {
 
         DocumentResponse documentResponse = new DocumentResponse();

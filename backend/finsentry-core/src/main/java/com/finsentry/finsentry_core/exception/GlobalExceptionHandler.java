@@ -74,4 +74,20 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(response);
     }
+
+    @ExceptionHandler(IncompleteDocumentsException.class)
+    public ResponseEntity<ApiErrorResponse> handleIncompleteDocuments(
+            IncompleteDocumentsException exception) {
+
+        ApiErrorResponse response = new ApiErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Bad Request",
+                exception.getMessage(),
+                OffsetDateTime.now()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(response);
+    }
 }
